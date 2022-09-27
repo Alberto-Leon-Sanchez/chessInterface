@@ -63,7 +63,7 @@ import {writeFen} from './fenWriter.js';
      
       let highlight = Array.from(Array(8).fill(null),()=> Array(8).fill(null));
 
-      if(!this.state.activeSquare){
+      if(!(this.state.activeSquare != null) ){
         fetch("http://127.0.0.1:8080/getMoves?fen="+this.state.fen,{"METHOD":"GET"})
           .then((response) => response.json())
             .then((moves) => {
@@ -81,15 +81,20 @@ import {writeFen} from './fenWriter.js';
       }else{
         let board = this.state.board.slice();
         let fen = this.state.fen;
+        let promotion = "";
 
         fetch("http://127.0.0.1:8080/getMoves?fen="+this.state.fen,{"METHOD":"GET"})
         .then((response) => response.json())
           .then((moves) => {
             for(let i = 0; i<moves.length;i++){
               if(moves[i].origin == this.state.activeSquare && moves[i].destiny == pos){
+                
+                if((board[Math.floor(moves[i].origin/8)][moves[i].origin%8] == defaultPieces.wP && moves[i].destiny > 55) || (board[Math.floor(moves[i].origin/8)][moves[i].origin%8] == defaultPieces.bP && moves[i].destiny < 8)){
+                  promotion = "Q";
+                }
 
                 fetch("http://127.0.0.1:8080/makeMove?fen="+this.state.fen+"&origin="+moves[i].origin
-                  +"&destiny="+moves[i].destiny, {"METHOD":"GET"})
+                  +"&destiny="+moves[i].destiny+"&promotion="+promotion, {"METHOD":"GET"})
                     .then(response => response.json())
                       .then(fenResponse => {
                         fen = fenResponse.fen
