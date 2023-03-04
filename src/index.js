@@ -136,6 +136,14 @@ import {writeFen} from './fenWriter.js';
       
     }
 
+    bestMove(depth){
+      fetch("http://127.0.0.1:8080/getBest?fen="+this.state.fen+"&depth="+depth,{"METHOD":"GET"}).then
+      (response => response.json()).then(fenResponse => {
+        document.getElementById("fen").value = fenResponse.fen
+        this.loadFen("")
+      })
+    }
+
     render(){
         
         return( 
@@ -146,6 +154,10 @@ import {writeFen} from './fenWriter.js';
             <div className='fenReader'>
                 <input id="fen" type="text" defaultValue="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"/>
                 <button id="fenButton" type="button" value="Load Fen" onClick={() => this.loadFen("")}/>  
+            </div>
+            <div className='fenReader'>
+                <input id="time" type="text" defaultValue="2"/>
+                <button id="fenButton" type="button" value="Load Fen" onClick={() => this.bestMove(document.getElementById("time").value)}/>  
             </div>
           </div>
         );
